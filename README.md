@@ -19,7 +19,7 @@ and facial expressions using BlazeFace + MobileFaceNet + ArcFace.
 ##  Setup
 
 ### 1. Clone repo
-git clone https://github.com/YOUR_USERNAME/face-recognition-blazeface-expressions
+git clone https://github.com/Lahiru-A01/face-recognition-blazeface-expressions
 cd face-recognition-blazeface-expressions
 
 ### 2. Create virtual environment
