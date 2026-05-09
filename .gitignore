@@ -1,0 +1,39 @@
+# Virtual environment
+venv/
+
+# Large model files
+models/*.pt
+models/*.onnx
+models/*.pth
+models/*.tflite
+
+# Dataset files
+data/raw_dataset/
+data/processed_dataset/
+data/embeddings/
+
+# Checkpoints
+models/checkpoints/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# VS Code
+.vscode/
+
+# Zip files
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.log
+convert_rec.py
+test_batch.py
+test_check.py
+test_env.py
