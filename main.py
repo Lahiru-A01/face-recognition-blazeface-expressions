@@ -7,8 +7,8 @@ from src.recognition.feature_extractor import FaceEmbedder
 from src.utils.similarity              import GalleryMatcher
 
 # ── Config ────────────────────────────────────
-THRESHOLD  = 0.88   # ORL model threshold
-MODEL_PATH = "models/face_model_scripted.pt"
+THRESHOLD  = 0.50
+MODEL_PATH = "models/face_model_vggface2.pt"
 GALLERY_DIR= "data/gallery"
 IMG_SIZE   = 112
 GREEN      = (0, 255, 0)
