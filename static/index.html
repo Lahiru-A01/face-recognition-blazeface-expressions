@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><title>Face Recognition</title></head>
+<body>
+  <h2>Face Recognition System</h2>
+  <video id="video" width="640" height="480" autoplay></video>
+  <canvas id="canvas" hidden></canvas>
+  <div id="result" style="font-size:24px; margin-top:10px;">Waiting...</div>
+  <br>
+  <input id="enrollName" placeholder="Enter name to enroll">
+  <button onclick="enroll()">Enroll Face</button>
+
+  <script>
+    const video  = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const result = document.getElementById('result');
+
+    navigator.mediaDevices.getUserMedia({video: true})
+      .then(stream => video.srcObject = stream);
+
+    // Recognize every 1 second
+    setInterval(async () => {
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob(async blob => {
+        const fd = new FormData();
+        fd.append('file', blob, 'frame.jpg');
+        const res  = await fetch('/recognize', {method:'POST', body:fd});
+        const data = await res.json();
+        result.style.color = data.authorized ? 'green' : 'red';
+        result.textContent = `${data.name} (${data.score.toFixed(2)})`;
+      }, 'image/jpeg');
+    }, 1000);
+
+    async function enroll() {
+      const name = document.getElementById('enrollName').value.trim();
+      if (!name) return alert('Enter a name first');
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob(async blob => {
+        const fd = new FormData();
+        fd.append('file', blob, 'frame.jpg');
+        const res  = await fetch(`/enroll/${name}`, {method:'POST', body:fd});
+        const data = await res.json();
+        alert(data.status);
+      }, 'image/jpeg');
+    }
+  </script>
+</body>
+</html>

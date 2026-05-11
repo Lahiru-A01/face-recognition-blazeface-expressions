@@ -1,0 +1,57 @@
+from fastapi import FastAPI, UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+import cv2, numpy as np
+from src.detection.blazeface_detector import BlazeFaceDetector
+from src.preprocessing.face_align import align_face
+from src.recognition.feature_extractor import FaceEmbedder
+from src.utils.similarity import GalleryMatcher
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+THRESHOLD  = 0.50
+MODEL_PATH = "models/face_model_vggface2.pt"
+GALLERY_DIR = "data/gallery"
+
+detector = BlazeFaceDetector()
+embedder = FaceEmbedder(MODEL_PATH)
+matcher  = GalleryMatcher(GALLERY_DIR)
+
+@app.post("/recognize")
+async def recognize(file: UploadFile = File(...)):
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    results = detector.detect(frame)
+    if not results.detections:
+        return JSONResponse({"name": "NO FACE", "score": 0.0, "authorized": False})
+    
+    detection = results.detections[0]
+    aligned   = align_face(frame, detection)
+    crop      = cv2.resize(aligned, (112, 112))
+    embedding = embedder.get_embedding(crop)
+    name, score = matcher.find_match(embedding, THRESHOLD)
+    
+    return JSONResponse({
+        "name": name or "UNKNOWN",
+        "score": float(score),
+        "authorized": name is not None
+    })
+
+@app.post("/enroll/{person_name}")
+async def enroll(person_name: str, file: UploadFile = File(...)):
+    contents = await file.read()
+    nparr    = np.frombuffer(contents, np.uint8)
+    frame    = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    results  = detector.detect(frame)
+    if not results.detections:
+        return JSONResponse({"status": "no face detected"})
+    detection = results.detections[0]
+    aligned   = align_face(frame, detection)
+    crop      = cv2.resize(aligned, (112, 112))
+    embedding = embedder.get_embedding(crop)
+    matcher.save_embedding(person_name, embedding)
+    matcher.load_gallery()
+    return JSONResponse({"status": f"enrolled {person_name}"})
