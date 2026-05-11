@@ -1,16 +1,19 @@
 # Virtual environment
 venv/
 
-# Large model files
+# Large model files (keep vggface2 via --force)
 models/*.pt
 models/*.onnx
 models/*.pth
 models/*.tflite
 
 # Dataset files
+data/raw/
 data/raw_dataset/
+data/processed/
 data/processed_dataset/
 data/embeddings/
+data/labels.csv
 
 # Checkpoints
 models/checkpoints/
@@ -33,7 +36,14 @@ Thumbs.db
 
 # Temp files
 *.log
+
+# Unnecessary files
 convert_rec.py
 test_batch.py
 test_check.py
 test_env.py
+test_inference.py
+requirements-torch.txt
+nixpacks.toml
+outputs/logs/
+outputs/predictions/
