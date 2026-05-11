@@ -1,11 +1,10 @@
-opencv-python==4.11.0.86
-mediapipe==0.10.20
-numpy==1.26.4
-torch
-torchvision
-onnxruntime
-pandas
+fastapi
+uvicorn
+python-multipart
+numpy
+opencv-python-headless
+mediapipe
 scikit-learn
-tqdm
-matplotlib
 pillow
+torch==2.0.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+torchvision==0.15.2+cpu --extra-index-url https://download.pytorch.org/whl/cpu
