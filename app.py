@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 import cv2, numpy as np, os
 from src.detection.blazeface_detector import BlazeFaceDetector
 from src.preprocessing.face_align import align_face
@@ -9,6 +9,10 @@ from src.utils.similarity import GalleryMatcher
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/static/index.html")
 
 THRESHOLD   = 0.50
 MODEL_PATH  = "models/face_model_vggface2.pt"
